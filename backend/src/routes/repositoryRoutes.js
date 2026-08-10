@@ -1,9 +1,14 @@
 import express from "express"
-import { getRepository } from "../services/githubService.js"
-import { getRepositoryInfo } from "../controllers/repositoryController.js";
+
+import { getRepositoryTreeInfo ,getFileContentInfo,getRepositoryInfo,searchRepositoryInfo} from "../controllers/repositoryController.js";
 
 const router=express.Router();
 
 router.get("/:owner/:repo",getRepositoryInfo);
 
+router.get("/:owner/:repo/tree",getRepositoryTreeInfo);
+
+router.get("/:owner/:repo/file",getFileContentInfo);
+
+router.get("/:owner/:repo/search",searchRepositoryInfo);
 export default router;
