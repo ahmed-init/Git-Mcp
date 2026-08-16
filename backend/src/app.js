@@ -1,6 +1,7 @@
 import express from "express"
 import { getRepository } from "./services/githubService.js";
 import repositoryRoutes from "./routes/repositoryRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 const app =express();
 app.use(express.json())
@@ -13,4 +14,5 @@ app.get("/api/health",(req,res)=>{
 });
 
 app.use("/api/repository",repositoryRoutes);
+app.use("/api",chatRoutes);
 export default app;
