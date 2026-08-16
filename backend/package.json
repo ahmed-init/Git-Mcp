@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "mcp": "node src/mcp/index.js"
+    "mcp": "node src/mcp/index.js",
+    "mcp-client": "node src/mcp/client.js"
   },
   "keywords": [],
   "author": "",
