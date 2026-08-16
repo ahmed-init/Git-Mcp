@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitHub AI Assistant</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- Header -->
+        <header class="header">
+            <div>
+                <h1>GitHub AI Assistant</h1>
+                <p>Ask questions about your GitHub repository.</p>
+            </div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                AJ
+            </div>
+        </header>
+
+
+        <!-- Chat -->
+        <main class="chat-container">
+
+            <div id="chatMessages" class="chat-messages">
+
+                <!-- Welcome message -->
+                <div class="message assistant">
+                    <div class="message-label">AI Assistant</div>
+
+                    <div class="message-content">
+                        Hi! I can help you understand a GitHub repository.
+                        <br><br>
+                        You can ask me about the project structure, files,
+                        database, backend, frontend, or how different parts
+                        of the project work together.
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Input -->
+            <div class="input-area">
+
+                <textarea
+                    id="messageInput"
+                    placeholder="Ask something about the repository..."
+                    rows="1"
+                ></textarea>
+
+                <button id="sendButton">
+                    Send
+                </button>
+
+            </div>
+
+            <p class="hint">
+                The assistant uses GitHub and MCP tools to understand the repository.
+            </p>
+
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

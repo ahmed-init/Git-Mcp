@@ -1,5 +1,4 @@
 import express from "express"
-import { getRepository } from "./services/githubService.js";
 import repositoryRoutes from "./routes/repositoryRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 
@@ -12,7 +11,9 @@ app.get("/api/health",(req,res)=>{
         message:"Github ai assistant backend is running"
     });
 });
+app.use(express.static("public"));
 
 app.use("/api/repository",repositoryRoutes);
 app.use("/api",chatRoutes);
+
 export default app;
