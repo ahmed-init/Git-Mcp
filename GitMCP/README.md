@@ -1,6 +1,6 @@
 # GitHub AI Repository Assistant
 
-An AI-powered GitHub repository assistant that allows users to ask questions about GitHub repositories using natural language.
+An AI-powered GitHub repository assistant that allows users to ask questions about GitHub repositories using natural language..
 
 The application combines an LLM with the Model Context Protocol (MCP) to intelligently inspect GitHub repositories, search files, retrieve source code, and provide clear explanations.
 
