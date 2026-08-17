@@ -1,5 +1,3 @@
-
-
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
 const chatMessages = document.getElementById("chatMessages");
@@ -19,11 +17,51 @@ function addMessage(text, type) {
         <div class="message-content"></div>
     `;
 
-    message.querySelector(".message-content").textContent = text;
+    const content = message.querySelector(".message-content");
+
+    if (type === "assistant" && typeof marked !== "undefined") {
+
+        content.innerHTML = marked.parse(text);
+
+    } else {
+
+        content.textContent = text;
+
+    }
 
     chatMessages.appendChild(message);
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return message;
+}
+
+
+function addLoadingMessage() {
+
+    const message = document.createElement("div");
+
+    message.className = "message assistant loading-message";
+
+    message.innerHTML = `
+        <div class="message-label">
+            AI Assistant
+        </div>
+
+        <div class="message-content">
+            <div class="typing">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `;
+
+    chatMessages.appendChild(message);
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return message;
 }
 
 
@@ -40,11 +78,16 @@ async function sendMessage() {
     messageInput.value = "";
 
     sendButton.disabled = true;
+    messageInput.disabled = true;
+
     sendButton.textContent = "Thinking...";
+
+    const loadingMessage = addLoadingMessage();
 
     try {
 
         const response = await fetch("/api/chat", {
+
             method: "POST",
 
             headers: {
@@ -54,6 +97,7 @@ async function sendMessage() {
             body: JSON.stringify({
                 question: question
             })
+
         });
 
 
@@ -61,11 +105,15 @@ async function sendMessage() {
 
 
         if (!result.success) {
+
             throw new Error(
                 result.error?.message || "Something went wrong"
             );
+
         }
 
+
+        loadingMessage.remove();
 
         addMessage(
             result.data.answer,
@@ -75,32 +123,52 @@ async function sendMessage() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Chat error:", error);
+
+        loadingMessage.remove();
 
         addMessage(
-            "Sorry, I couldn't process your question.",
+            `### Something went wrong
+
+${error.message}
+
+Please try again.`,
             "assistant"
         );
 
     } finally {
 
         sendButton.disabled = false;
+        messageInput.disabled = false;
+
         sendButton.textContent = "Send";
 
         messageInput.focus();
+
     }
 }
 
 
-sendButton.addEventListener("click", sendMessage);
+sendButton.addEventListener(
+    "click",
+    sendMessage
+);
 
 
-messageInput.addEventListener("keydown", (event) => {
+messageInput.addEventListener(
+    "keydown",
+    (event) => {
 
-    if (event.key === "Enter" && !event.shiftKey) {
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        sendMessage();
+            sendMessage();
+
+        }
+
     }
-});
+);

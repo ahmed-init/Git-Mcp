@@ -7,7 +7,7 @@ export async function getRepository(owner, repo) {
         `https://api.github.com/repos/${owner}/${repo}`,
         {
             headers: {
-                Authorization: `Bearer ${config.githubToken}`,
+                //Authorization: `Bearer ${config.githubToken}`,
                 Accept: "application/vnd.github+json"
             }
         }
@@ -40,7 +40,7 @@ export async function getRepositoryTree(owner, repo, branch) {
         `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
         {
             headers: {
-               // Authorization: `Bearer ${config.githubToken}`,
+                //Authorization: `Bearer ${config.githubToken}`,
                 Accept: "application/vnd.github+json"
             }
         }
@@ -67,7 +67,7 @@ export async function getFileContent(owner, repo, path, branch) {
         `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
         {
             headers: {
-               //Authorization: `Bearer ${config.githubToken}`,
+                //Authorization: `Bearer ${config.githubToken}`,
                 Accept: "application/vnd.github+json"
             }
         }
@@ -112,20 +112,86 @@ export async function getFileContent(owner, repo, path, branch) {
     };
 }
 
-export async function searchRepository(owner,repo,query,branch)
-{
-    const tree=await getRepositoryTree(
+export async function searchRepository(owner, repo, query, branch) {
+
+    const tree = await getRepositoryTree(
         owner,
         repo,
         branch
     );
 
+    const searchTerm = query.trim().toLowerCase();
 
-    const searchTerm=query.trim().toLowerCase();
-    const results=tree.filter((item)=>{
-        const path=item.path.toLowerCase();
-        return path.includes(searchTerm);
+    // First: search file/folder paths
+    const pathResults = tree.filter((item) => {
+        return item.path.toLowerCase().includes(searchTerm);
     });
-    console.log("Search results:",results);
-    return results;
+
+    // If path search found something, return it
+    if (pathResults.length > 0) {
+        console.log("Path search results:", pathResults);
+        return pathResults;
+    }
+
+    // No matching path.
+    // Search the contents of small text/code files.
+    const textExtensions = [
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".json",
+        ".md",
+        ".html",
+        ".css",
+        ".sql",
+        ".java",
+        ".py",
+        ".c",
+        ".cpp"
+    ];
+
+    const fileResults = [];
+
+    for (const item of tree) {
+
+        if (item.type !== "blob") {
+            continue;
+        }
+
+        const isTextFile = textExtensions.some((extension) =>
+            item.path.toLowerCase().endsWith(extension)
+        );
+
+        if (!isTextFile) {
+            continue;
+        }
+
+        try {
+
+            const file = await getFileContent(
+                owner,
+                repo,
+                item.path,
+                branch
+            );
+
+            if (file.content.toLowerCase().includes(searchTerm)) {
+
+                fileResults.push({
+                    path: file.path,
+                    type: item.type
+                });
+            }
+
+        } catch (error) {
+            console.log(
+                `Could not read ${item.path}: ${error.message}`
+            );
+        }
+    }
+
+    console.log("Content search results:", fileResults);
+
+    return fileResults;
 }
